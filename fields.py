@@ -4,6 +4,7 @@ import random
 from typing import Optional, List
 import os
 import json
+import string
 
 
 def fields_names(table):
@@ -146,3 +147,43 @@ class FloatRange(SparkField):
         if new_a > new_b:
             return self
         return FloatRange(new_a, new_b)
+
+
+class StringRange(SparkField):
+    def __init__(self, f_length, to_length, alphabet=string.printable):
+        assert f_length >= 0 and to_length >= 0
+        assert f_length <= to_length
+        assert len(alphabet) > 0
+        self.a = None
+        self.b = None
+        self.alphabet = None
+        self.set_range(f_length, to_length, alphabet)
+
+    def set_range(self, f_length, to_length, alphabet) -> SparkField:
+        assert f_length >= 0 and to_length >= 0
+        assert f_length <= to_length
+        assert len(alphabet) > 0
+        self.a = f_length
+        self.b = to_length
+        self.alphabet = alphabet
+        return self
+
+    def get(self) -> str:
+        return ''.join(random.choices(self.alphabet, k=random.randint(self.a, self.b)))
+
+    def intersect(self, other):
+        if isinstance(other, StringRange):
+            if self.b < other.a or other.b < self.a:
+                return None
+            alphabet_intersection = ''.join(set(self.alphabet).intersection(other.alphabet))
+            if len(alphabet_intersection) == 0:
+                return None
+            return StringRange(max(self.a, other.a), min(self.b, other.b), alphabet_intersection)
+        return super().intersect(other)
+
+    def apply_changes(self, changes: dict) -> SparkField:
+        new_a, new_b, new_alphabet = changes.get("a", self.a), changes.get("b", self.b), changes.get("a", self.alphabet)
+        return StringRange(new_a, new_b, new_alphabet)
+class StringLen(StringRange):
+    def __init__(self, length, alphabet=string.printable):
+        super(StringLen, self).__init__(length, length, alphabet)

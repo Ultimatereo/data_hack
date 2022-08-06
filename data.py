@@ -8,6 +8,7 @@ class Cell:
     float2: float = FloatRange(1, 5)
     float3: float = FloatRange(1, 5)
     integer4: int = IntegerRange(1, 5)
+    string1: str = StringLen(1, "abc")
 
 
 @dataclass
