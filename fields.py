@@ -191,29 +191,25 @@ class StringLen(StringRange):
         super(StringLen, self).__init__(length, length, alphabet)
 
 
-class FromList(SparkField):
-    def __init__(self, select: List):
+class Select(SparkField):
+    def __init__(self, select: set):
         assert all(map(lambda key: isinstance(key, int), select)) or all(map(lambda key: isinstance(key, str), select))
         assert len(select) > 0
-        self.select = select
-
-
-
+        self.select = list(select)
 
     def get(self) -> str:
-        print(self.select[random.randint(0, len(self.select) - 1)])
-        return self.select[random.randint(0, len(self.select) - 1)]
+        return random.choice(tuple(self.select))
 
     def intersect(self, other):
-        if isinstance(other, FromList):
-            if type(self.select[0]) != type(other.select[0]):
+        if isinstance(other, Select):
+            if isinstance(self.select[0], type(other.select[0])):
                 return None
-            list_intersection = list((set(self.select).intersection(other.select)))
+            list_intersection = set(self.select).intersection(other.select)
             if len(list_intersection) == 0:
                 return None
-            return FromList(list_intersection)
+            return Select(list_intersection)
         return super().intersect(other)
 
     def apply_changes(self, changes: dict) -> SparkField:
         new_select = changes.get("select", self.select)
-        return FromList(new_select)
+        return Select(new_select)
