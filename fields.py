@@ -80,6 +80,13 @@ class SparkField:
         """
         pass
 
+    def validate(self, validate_val: str | int | float):
+        """
+        checks the ability to generate validate_val
+        :param validate_val:
+        """
+        pass
+
 
 class Range(SparkField):
     def __init__(self, data_type, a, b):
@@ -130,6 +137,9 @@ class IntegerRange(Range):
     def get(self) -> int:
         return random.randint(self.a, self.b)
 
+    def validate(self, validate_val: str | int | float):
+        return isinstance(validate_val, int) and self.a <= validate_val <= self.b
+
 
 class FloatRange(Range):
     """
@@ -146,43 +156,43 @@ class FloatRange(Range):
     def get(self) -> int:
         return random.random() * (self.b - self.a) + self.a
 
+    def validate(self, validate_val: str | int | float):
+        return isinstance(validate_val, float) and self.a <= validate_val <= self.b
 
 
 class StringRange(SparkField):
-    def __init__(self, f_length, to_length, alphabet=string.printable):
-        assert f_length >= 0 and to_length >= 0
-        assert f_length <= to_length
+    def __init__(self, from_length, to_length, alphabet=string.printable):
+        assert from_length >= 0 and to_length >= 0
+        assert from_length <= to_length
         assert len(alphabet) > 0
-        self.a = None
-        self.b = None
-        self.alphabet = None
-        self.set_range(f_length, to_length, alphabet)
-
-    def set_range(self, f_length, to_length, alphabet) -> SparkField:
-        assert f_length >= 0 and to_length >= 0
-        assert f_length <= to_length
-        assert len(alphabet) > 0
-        self.a = f_length
-        self.b = to_length
+        self.from_length = from_length
+        self.to_length = to_length
         self.alphabet = alphabet
-        return self
 
     def get(self) -> str:
-        return ''.join(random.choices(self.alphabet, k=random.randint(self.a, self.b)))
+        return ''.join(random.choices(self.alphabet, k=random.randint(self.from_length, self.to_length)))
 
     def intersect(self, other):
         if isinstance(other, StringRange):
-            if self.b < other.a or other.b < self.a:
+            if self.to_length < other.from_length or other.to_length < self.from_length:
                 return None
             alphabet_intersection = ''.join(set(self.alphabet).intersection(other.alphabet))
             if len(alphabet_intersection) == 0:
                 return None
-            return StringRange(max(self.a, other.a), min(self.b, other.b), alphabet_intersection)
+            return StringRange(max(self.from_length, other.from_length), min(self.to_length, other.to_length),
+                               alphabet_intersection)
         return super().intersect(other)
 
     def apply_changes(self, changes: dict) -> SparkField:
-        new_a, new_b, new_alphabet = changes.get("a", self.a), changes.get("b", self.b), changes.get("a", self.alphabet)
+        new_a, new_b, new_alphabet = changes.get("from_length", self.from_length), changes.get("to_length",
+                                                                                               self.to_length), changes.get(
+            "alphabet", self.alphabet)
         return StringRange(new_a, new_b, new_alphabet)
+
+    def validate(self, validate_val: str | int | float):
+        return isinstance(validate_val, str) \
+               and self.from_length <= len(validate_val) <= self.to_length \
+               and all(map(lambda ch: ch in self.alphabet, validate_val))
 
 
 class StringLen(StringRange):
@@ -192,21 +202,31 @@ class StringLen(StringRange):
 
 class Select(SparkField):
     def __init__(self, select: set):
-        assert all(map(lambda key: isinstance(key, int), select)) or all(map(lambda key: isinstance(key, str), select))
         assert len(select) > 0
-        self.select = list(select)
+        list_select = list(select)
+        set_type = type(list_select[0])
+        assert all(map(lambda key: isinstance(key, set_type), list_select))
+        self.select = list_select
 
-    def get(self) -> str:
+    def get(self) -> str | int | float:
         return random.choice(tuple(self.select))
 
     def intersect(self, other):
         if isinstance(other, Select):
-            if isinstance(self.select[0], type(other.select[0])):
+            if not isinstance(self.select[0], type(other.select[0])):
                 return None
             list_intersection = set(self.select).intersection(other.select)
             if len(list_intersection) == 0:
                 return None
             return Select(list_intersection)
+        elif isinstance(other, (Range, StringRange)):
+            res_select = set()
+            for item in self.select:
+                if other.validate(item):
+                    res_select.add(item)
+            if len(res_select) > 0:
+                return Select(res_select)
+            return None
         return super().intersect(other)
 
     def apply_changes(self, changes: dict) -> SparkField:
