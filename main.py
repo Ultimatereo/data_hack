@@ -1,5 +1,7 @@
 import importlib
+import json
 from pprint import pprint
+
 from fields import *
 from generator import *
 
@@ -60,9 +62,27 @@ def main_generate():
 
 
 def play_around():
-    pass
+    def validate(date_text):
+        try:
+            datetime.strptime(date_text, '%Y-%m-%d')
+            return True
+        except ValueError:
+            raise ValueError("Incorrect data format, should be YYYY-MM-DD")
 
-
+    d = datetime(2022, 11, 28, 11, 30)
+    print(d)
+    print(d.date())
+    dt = date(year=2022, month=11, day=28)
+    print(dt)
+    # print(dt.timestamp)
+    dt2 = date(year=2021, month=11, day=23)
+    dt3 = datetime(2021, 11, 23, 23, 59)
+    print(dt < dt2)
+    print(date.today())
+    fake = Faker()
+    print(fake.date_between(dt2, dt))
+    print(validate(str(date.today())))
+    print(dt3.date())
 if __name__ == '__main__':
     main_generate()
     # play_around()

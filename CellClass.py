@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+
 from fields import *
 
 
@@ -9,3 +10,5 @@ class Cell:
     float2: float = FloatRange(1, 5)
     select: int = Select({1, 3, 2})
     mymask: int = IntegerMask("123###321##2", "01234")
+    date1: str = Date()
+    date2: str = TimeStamp()
