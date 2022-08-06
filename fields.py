@@ -1,10 +1,11 @@
-import typing
-from dataclasses import fields
-import random
-from typing import *
-import os
 import json
+import os
+import random
 import string
+import typing
+from typing import *
+
+from dataclasses import fields
 
 
 def fields_names(table):
@@ -143,7 +144,7 @@ class FloatRange(Range):
     def create_new(*args, **kwargs):
         return FloatRange(*args, **kwargs)
 
-    def get(self) -> int:
+    def get(self) -> float:
         return random.random() * (self.b - self.a) + self.a
 
 
