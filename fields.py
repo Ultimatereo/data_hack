@@ -223,7 +223,7 @@ class Mask(SparkField):
     def apply_changes(self, changes: dict) -> SparkField:
         new_mask = changes.get("mask", self.mask)
         new_alphabet = changes.get("alphabet", self.alphabet)
-        return Mask(new_mask, new_alphabet)
+        return self.create_new(new_mask, new_alphabet)
 
     def validate(self, validate_val: Union[str, int, float]):
         validate_val = str(validate_val)
@@ -246,12 +246,18 @@ class IntegerMask(Mask):
     def get(self):
         return int(self.get_impl())
 
+    def create_new(self, *args, **kwargs):
+        return IntegerMask(*args, **kwargs)
+
 class StringMask(Mask):
     def __init__(self, mask, alphabet=string.printable):
         super().__init__(mask, alphabet)
 
     def get(self):
         return self.get_impl()
+
+    def create_new(self, *args, **kwargs):
+        return StringMask(*args, **kwargs)
 
 class Time(SparkField):
     def __init__(self):
