@@ -213,3 +213,35 @@ class Select(SparkField):
     def apply_changes(self, changes: dict) -> SparkField:
         new_select = changes.get("select", self.select)
         return Select(new_select)
+
+
+class Mask(SparkField):
+    def __init__(self, mask, alphabet):
+        assert len(mask) > 0
+        self.mask = mask
+        self.alphabet = alphabet
+
+    def get(self):
+        c = self.mask.count("#")
+        answer = ""
+        for i in range(len(self.mask)):
+            if self.mask[i] == '#':
+                answer += random.choice(self.alphabet)
+            else:
+                answer += self.mask[i]
+        return answer
+
+    def apply_changes(self, changes: dict) -> SparkField:
+        new_mask = changes.get("mask", self.mask)
+        new_alphabet = changes.get("alphabet", self.alphabet)
+        return Mask(new_mask, new_alphabet)
+
+
+class IntegerMask(Mask):
+    def __init__(self, mask, alphabet="0123456789"):
+        super().__init__(mask, alphabet)
+
+
+class StringMask(Mask):
+    def __init__(self, mask, alphabet=string.printable):
+        super().__init__(mask, alphabet)

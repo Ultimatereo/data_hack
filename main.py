@@ -59,5 +59,5 @@ def play_around():
 
 
 if __name__ == '__main__':
-    # main_generate()
-    play_around()
+    main_generate()
+    # play_around()
