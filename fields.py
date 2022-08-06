@@ -1,5 +1,3 @@
-import json
-import os
 import random
 import string
 import typing
@@ -217,6 +215,16 @@ class Mask(SparkField):
         new_alphabet = changes.get("alphabet", self.alphabet)
         return Mask(new_mask, new_alphabet)
 
+    def validate(self, validate_val: Union[str, int, float]):
+        validate_val = str(validate_val)
+        if len(self.mask) != len(validate_val):
+            return False
+        for i in range(len(self.mask)):
+            if self.mask[i] == "#" and not validate_val[i] in self.alphabet:
+                return False
+            if self.mask[i] != "#" and validate_val[i] != self.mask[i]:
+                return False
+        return True
 
 class IntegerMask(Mask):
     def __init__(self, mask, alphabet="0123456789"):
