@@ -13,6 +13,17 @@
     "mymask": {
       "mask": "1###444###",
       "alphabet": "78"
+      "alphabet": "789"
+    },
+    "date1": {
+      "start_year": 2022,
+      "stop_year": 2022
+    },
+    "date2": {
+      "start_year": 2022,
+      "stop_year": 2022,
+      "start_month": 5,
+      "stop_month": 5
     }
   },
   "Cell2": {

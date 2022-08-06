@@ -11,3 +11,5 @@ class Cell:
     mymask: int = IntegerMask("123###321##2", "01234")
     string: str = StringRange(2, 5)
     abcword: str = StringRange(4, 5, "abc")
+    date1: str = Date()
+    date2: str = TimeStamp()

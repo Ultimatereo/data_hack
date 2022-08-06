@@ -1,9 +1,10 @@
 import random
 import string
-import typing
+from datetime import datetime, date, time
 from typing import *
 
 from dataclasses import fields
+from faker import Faker
 
 
 def fields_names(table):
@@ -12,6 +13,8 @@ def fields_names(table):
 
 
 class SparkField:
+    fake = Faker()
+
     def create_new(self, *args, **kwargs):
         """
         Creates new SparkField with such args
@@ -41,6 +44,13 @@ class SparkField:
         """
         checks the ability to generate validate_val
         :param validate_val:
+        """
+        pass
+
+    def get(self):
+        """
+        gets a new value of SparkField
+        :return:
         """
         pass
 
@@ -226,6 +236,7 @@ class Mask(SparkField):
                 return False
         return True
 
+
 class IntegerMask(Mask):
     def __init__(self, mask, alphabet="0123456789"):
         super().__init__(mask, alphabet)
@@ -234,3 +245,93 @@ class IntegerMask(Mask):
 class StringMask(Mask):
     def __init__(self, mask, alphabet=string.printable):
         super().__init__(mask, alphabet)
+
+
+class Time(SparkField):
+    def __init__(self):
+        self.start = None
+        self.stop = None
+
+    def validate(self, validate_val: Union[str, int, float]):
+        if (isinstance(validate_val, str)):
+            try:
+                self.check(validate_val)
+                return True
+            except ValueError:
+                return False
+
+    def intersect(self, other):
+        if isinstance(other, Time):
+            first_start1 = date(self.start.year, self.start.month, self.start.day)
+            first_stop1 = date(self.stop.year, self.start.month, self.start.day)
+            second_start1 = date(other.start.year, other.start.month, other.start.day)
+            second_stop1 = date(other.stop.year, other.stop.month, other.stop.day)
+            first_start2 = time(0, 0)
+            first_stop2 = time(0, 0)
+            second_start2 = time(0, 0)
+            second_stop2 = time(0, 0)
+            if isinstance(self, TimeStamp):
+                first_start2 = time(self.start.hour, self.start.minute)
+                first_stop2 = time(self.stop.hour, self.stop.minute)
+            if isinstance(other, TimeStamp):
+                second_start2 = time(other.start.hour, other.start.minute)
+                second_stop2 = time(other.stop.hour, other.stop.minute)
+
+            max_start = max(datetime.combine(first_start1, first_start2),
+                            datetime.combine(second_start1, second_start2))
+            min_stop = min(datetime.combine(first_stop1, first_stop2), datetime.combine(second_stop1, second_stop2))
+            if max_start <= min_stop:
+                return self.create_new(max_start, min_stop)
+        return None
+
+    def apply_changes(self, changes: dict):
+        new_start_year = changes.get("start_year", self.start.year)
+        new_start_month = changes.get("start_month", self.start.month)
+        new_start_day = changes.get("start_day", self.start.day)
+        new_start_hour = changes.get("start_hour", 0)
+        new_start_minute = changes.get("start_minute", 0)
+        new_stop_year = changes.get("stop_year", self.stop.year)
+        new_stop_month = changes.get("stop_month", self.stop.month)
+        new_stop_day = changes.get("stop_day", self.stop.day)
+        new_stop_hour = changes.get("stop_hour", 0)
+        new_stop_minute = changes.get("stop_minute", 0)
+        return self.create_new(
+            datetime(new_start_year, new_start_month, new_start_day, new_start_hour, new_start_minute),
+            datetime(new_stop_year, new_stop_month, new_stop_day, new_stop_hour, new_stop_minute))
+
+    def check(self, validate_val):
+        pass
+
+
+class Date(Time):
+    def __init__(self, start=date(1970, 1, 1), stop=date.today()):
+        super().__init__()
+        assert start <= stop
+        self.start = start
+        self.stop = stop
+
+    def get(self):
+        return str(self.fake.date_between(self.start, self.stop))
+
+    def create_new(self, start, end):
+        return Date(start.date(), end.date())
+
+    def check(self, validate_val):
+        datetime.strptime(validate_val, '%Y-%m-%d')
+
+
+class TimeStamp(Time):
+    def __init__(self, start=datetime(1970, 1, 1, 0, 0, 0), stop=datetime.today()):
+        super().__init__()
+        assert start <= stop
+        self.start = start
+        self.stop = stop
+
+    def get(self):
+        return str(self.fake.date_time_between(self.start, self.stop))
+
+    def create_new(self, *args, **kwargs):
+        return TimeStamp(*args, **kwargs)
+
+    def check(self, validate_val):
+        datetime.strptime(validate_val, '%Y-%m-%d %H:%M:%S')
