@@ -1,0 +1,14 @@
+services:
+  main:
+    build: .
+    entrypoint: ["python", "main.py"]
+    volumes:
+      - ./result:/result
+      - ./config:/config
+
+  test:
+    build: .
+    entrypoint: ["python", "test.py"]
+    volumes:
+      - ./result:/result
+      - ./test_config:/config

@@ -1,0 +1,2 @@
+pyspark==3.3.0
+faker>2.0
