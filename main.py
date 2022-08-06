@@ -53,4 +53,3 @@ print("_______")
 print(generate_paired(a, b, ['float3', 'integer4']))
 print(generate(a))
 print(generate(b))
-"""
