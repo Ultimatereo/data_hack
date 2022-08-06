@@ -5,6 +5,9 @@ from fields import *
 from generator import *
 import json
 
+DATA_TYPES = {"csv", "json", "parquet"}
+EXPORT_MODES = {"append", "overwrite", "ignore"}
+
 spark = SparkSession.builder.appName('Data_hack').getOrCreate()
 
 
@@ -42,34 +45,49 @@ def apply_changes(table, table_class_name, changes: dict):
         setattr(table, field_name, getattr(table, field_name).apply_changes(table_changes.get(field_name)))
 
 
-def solo_generate():
-    table = load_table("CellClass", "Cell")
-    load_config(table, "Cell")
+def export_dataframe(df, path, export_type, export_mode):
+    if export_type not in DATA_TYPES:
+        raise Exception(f"Unknown export_type '{export_type}'. It must be one of {DATA_TYPES}")
+    if export_mode not in EXPORT_MODES:
+        raise Exception(f"Unknown export_mode '{export_mode}'. It must be one of {EXPORT_MODES}")
+    df.write.format(export_type).mode(export_mode).save(path)
+
+
+def solo_generate(table_script_path, table_class_name, export_path='output', export_type='parquet',
+                  export_mode='overwrite'):
+    table = load_table(table_script_path, table_class_name)
+    load_config(table, table_class_name)
     data = generator(table)
     rdd = spark.sparkContext.parallelize(data)
     df = rdd.toDF(list(fields_names(table)))
-    df.write.parquet("parq")
+    export_dataframe(df, export_path, export_type, export_mode)
 
 
-def show_data(path):
-    df = spark.read.parquet(path)
-    df.show()
-    print(df.count())
-    print(df.printSchema())
-
-
-def intersect_generate():
-    table1 = load_table("CellClass", "Cell")
-    table2 = load_table("Cell2Class", "Cell2")
-    load_config(table1, "Cell")
-    load_config(table2, "Cell2")
-    data1, data2 = paired_generator(table1, table2, {"integer1": "iid", "float2": "acceleration", "abcword": "word"})
+def intersect_generate(table1_script_path, table1_class_name,
+                       table2_script_path, table2_class_name,
+                       intersect_keys: dict,
+                       export_path1='output1', export_path2='output2',
+                       export_type='parquet', export_mode='overwrite'):
+    table1 = load_table(table1_script_path, table1_class_name)
+    table2 = load_table(table2_script_path, table2_class_name)
+    load_config(table1, table1_class_name)
+    load_config(table2, table2_class_name)
+    data1, data2 = paired_generator(table1, table2, intersect_keys)
     rdd = spark.sparkContext.parallelize(data1)
-    df = rdd.toDF(list(fields_names(table1)))
-    df.write.parquet("parq1")
+    df1 = rdd.toDF(list(fields_names(table1)))
+    export_dataframe(df1, export_path1, export_type, export_mode)
     rdd = spark.sparkContext.parallelize(data2)
-    df = rdd.toDF(list(fields_names(table2)))
-    df.write.parquet("parq2")
+    df2 = rdd.toDF(list(fields_names(table2)))
+    export_dataframe(df2, export_path2, export_type, export_mode)
+
+
+def show_data(path, data_type="parquet", count=20):
+    if data_type not in DATA_TYPES:
+        raise Exception(f"Unknown data_type '{data_type}'. It must be one of {DATA_TYPES}")
+    df = spark.read.format(data_type).load(path)
+    df.show(count)
+    print(df.count())
+    df.printSchema()
 
 
 def play_around():
@@ -98,10 +116,13 @@ def play_around():
 
 if __name__ == '__main__':
     try:
-        show_data("parq")
-        # show_data("parq1")
-        # show_data("parq2")
-        # solo_generate()
-        # intersect_generate()
+        # solo_generate("CellClass", "Cell", "CellGenCSV", "csv")
+        intersect_generate("CellClass", "Cell",
+                           "Cell2Class", "Cell2",
+                           {"integer1": "iid", "float2": "acceleration", "abcword": "word"},
+                           export_type="parquet")
+        # show_data("CellGen", "parquet")
+        show_data("output1", "parquet")
+        show_data("output2", "parquet")
     except Exception as e:
         print(e)
