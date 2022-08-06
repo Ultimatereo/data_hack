@@ -1,0 +1,4 @@
+{
+  "dataclasses_dir": "tables",
+  "dataclasses": ["table1", "table2"]
+}
