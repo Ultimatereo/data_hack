@@ -210,7 +210,7 @@ class Mask(SparkField):
         self.mask = mask
         self.alphabet = alphabet
 
-    def get(self):
+    def get_impl(self):
         c = self.mask.count("#")
         answer = ""
         for i in range(len(self.mask)):
@@ -223,7 +223,7 @@ class Mask(SparkField):
     def apply_changes(self, changes: dict) -> SparkField:
         new_mask = changes.get("mask", self.mask)
         new_alphabet = changes.get("alphabet", self.alphabet)
-        return Mask(new_mask, new_alphabet)
+        return self.create_new(new_mask, new_alphabet)
 
     def validate(self, validate_val: Union[str, int, float]):
         validate_val = str(validate_val)
@@ -239,13 +239,25 @@ class Mask(SparkField):
 
 class IntegerMask(Mask):
     def __init__(self, mask, alphabet="0123456789"):
+        if not alphabet.isnumeric():
+            raise Exception("Alphabet of Integer Mask should contain just numbers! But there were some letters found.")
         super().__init__(mask, alphabet)
 
+    def get(self):
+        return int(self.get_impl())
+
+    def create_new(self, *args, **kwargs):
+        return IntegerMask(*args, **kwargs)
 
 class StringMask(Mask):
     def __init__(self, mask, alphabet=string.printable):
         super().__init__(mask, alphabet)
 
+    def get(self):
+        return self.get_impl()
+
+    def create_new(self, *args, **kwargs):
+        return StringMask(*args, **kwargs)
 
 class Time(SparkField):
     def __init__(self):
