@@ -1,7 +1,8 @@
-from pyspark.sql import SparkSession
 import importlib
 import json
-from pprint import pprint
+
+from pyspark.sql import SparkSession
+
 from fields import *
 from generator import *
 
@@ -91,6 +92,9 @@ def play_around():
     print(fake.date_between(dt2, dt))
     print(validate(str(date.today())))
     print(dt3.date())
+    ans = int("BRUH")
+
+
 if __name__ == '__main__':
     show_data()
     # solo_generate()

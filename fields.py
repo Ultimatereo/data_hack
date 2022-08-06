@@ -210,7 +210,7 @@ class Mask(SparkField):
         self.mask = mask
         self.alphabet = alphabet
 
-    def get(self):
+    def get_impl(self):
         c = self.mask.count("#")
         answer = ""
         for i in range(len(self.mask)):
@@ -239,13 +239,19 @@ class Mask(SparkField):
 
 class IntegerMask(Mask):
     def __init__(self, mask, alphabet="0123456789"):
+        if not alphabet.isnumeric():
+            raise Exception("Alphabet of Integer Mask should contain just numbers! But there were some letters found.")
         super().__init__(mask, alphabet)
 
+    def get(self):
+        return int(self.get_impl())
 
 class StringMask(Mask):
     def __init__(self, mask, alphabet=string.printable):
         super().__init__(mask, alphabet)
 
+    def get(self):
+        return self.get_impl()
 
 class Time(SparkField):
     def __init__(self):
