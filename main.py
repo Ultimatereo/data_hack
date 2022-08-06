@@ -10,6 +10,11 @@ def get_table_class(path, class_name):
     return c
 
 
+def load_table(tables: dict, table_script: str, table_class_name: str):
+    table_class = get_table_class(table_script, table_class_name)
+    tables[table_class_name] = table_class()
+
+
 def load_config(tables: dict, config_path="config.json"):
     try:
         with open(config_path, "r") as config:
@@ -34,20 +39,24 @@ def main_generate():
     # init tables
     tables = {}
 
-    table_script = "CellClass"
-    table_class_name = "Cell"
-    table_class = get_table_class(table_script, table_class_name)
-    tables[table_class_name] = table_class()
+    load_table(tables, "CellClass", "Cell")
+    # load_table(tables, "Cell2Class", "Cell2")
 
     # load config
     load_config(tables)
 
-    # generate data
-    data = generator(tables)
-    for table in data:
-        print(f"TABLE {table}")
-        for row in data.get(table):
-            print(row)
+    if True:
+        # generate solo data
+        data = generator(tables)
+        # print("Data generated")
+        for table in data:
+            print(f"TABLE {table}")
+            for row in data.get(table):
+                print(row)
+    else:
+        data1, data2 = generate_paired(tables.get("Cell"), tables.get("Cell2"), {"integer1": "iid"})
+        pprint(data1)
+        pprint(data2)
 
 
 def play_around():

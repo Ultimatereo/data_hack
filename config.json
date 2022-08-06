@@ -9,6 +9,15 @@
     },
     "float2": {
       "start": -5
+    },
+    "mymask": {
+      "mask": "1###444###",
+      "alphabet": "789"
+    }
+  },
+  "Cell2": {
+    "__cnt__": {
+      "value": 10
     }
   }
 }
