@@ -7,9 +7,13 @@ from dataclasses import fields
 from faker import Faker
 
 
+def all_fields_names(table):
+    return map(lambda field: field.name, fields(table))
+
+
 def fields_names(table):
     return filter(lambda name: not (name.startswith("__") or name.endswith("__")),
-                  map(lambda field: field.name, fields(table)))
+                  all_fields_names(table))
 
 
 class SparkField:
@@ -249,6 +253,7 @@ class IntegerMask(Mask):
     def create_new(self, *args, **kwargs):
         return IntegerMask(*args, **kwargs)
 
+
 class StringMask(Mask):
     def __init__(self, mask, alphabet=string.printable):
         super().__init__(mask, alphabet)
@@ -258,6 +263,7 @@ class StringMask(Mask):
 
     def create_new(self, *args, **kwargs):
         return StringMask(*args, **kwargs)
+
 
 class Time(SparkField):
     def __init__(self):
@@ -323,7 +329,7 @@ class Date(Time):
         self.stop = stop
 
     def get(self):
-        return str(self.fake.date_between(self.start, self.stop))
+        return self.fake.date_between(self.start, self.stop)
 
     def create_new(self, start, end):
         return Date(start.date(), end.date())
@@ -340,7 +346,7 @@ class TimeStamp(Time):
         self.stop = stop
 
     def get(self):
-        return str(self.fake.date_time_between(self.start, self.stop))
+        return self.fake.date_time_between(self.start, self.stop)
 
     def create_new(self, *args, **kwargs):
         return TimeStamp(*args, **kwargs)
