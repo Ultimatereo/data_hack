@@ -11,6 +11,3 @@ VOLUME ./config /config
 VOLUME ./result /result
 
 COPY . .
-
-
-ENTRYPOINT ["python", "main.py"]
