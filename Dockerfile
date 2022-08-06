@@ -13,4 +13,4 @@ VOLUME ./result /result
 COPY . .
 
 
-CMD ["python", "main.py"]
+ENTRYPOINT ["python", "main.py"]
