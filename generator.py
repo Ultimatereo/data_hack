@@ -1,10 +1,6 @@
 from dataclasses import fields
 from typing import List
-
-
-def fields_names(table):
-    return filter(lambda name: not (name.startswith("__") or name.endswith("__")),
-                  map(lambda field: field.name, fields(table)))
+from fields import fields_names
 
 
 def generate(table):

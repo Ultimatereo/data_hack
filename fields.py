@@ -1,10 +1,15 @@
+import typing
 from dataclasses import fields
 import random
 from typing import *
 import os
 import json
-from typing import Optional
 import string
+
+
+def fields_names(table):
+    return filter(lambda name: not (name.startswith("__") or name.endswith("__")),
+                  map(lambda field: field.name, fields(table)))
 
 
 def generate_paired(table1, table2, keys: typing.Dict):
@@ -133,7 +138,6 @@ class Constant(SparkField):
 
     def get(self):
         return self.value
-
 
 
 class StringRange(SparkField):
