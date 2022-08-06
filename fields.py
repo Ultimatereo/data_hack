@@ -71,7 +71,7 @@ class SparkField:
         """
         pass
 
-    def validate(self, validate_val: str | int | float):
+    def validate(self, validate_val: Union[str, int, float]):
         """
         checks the ability to generate validate_val
         :param validate_val:
@@ -116,8 +116,8 @@ class IntegerRange(Range):
     def get(self) -> int:
         return random.randint(self.start, self.stop)
 
-    def validate(self, validate_val: str | int | float):
-        return isinstance(validate_val, int) and self.a <= validate_val <= self.b
+    def validate(self, validate_val: Union[str, int, float]):
+        return isinstance(validate_val, int) and self.start <= validate_val <= self.stop
 
 
 class FloatRange(Range):
@@ -135,8 +135,8 @@ class FloatRange(Range):
     def get(self) -> float:
         return random.random() * (self.stop - self.start) + self.start
 
-    def validate(self, validate_val: str | int | float):
-        return isinstance(validate_val, float) and self.a <= validate_val <= self.b
+    def validate(self, validate_val: Union[str, int, float]):
+        return isinstance(validate_val, float) and self.start <= validate_val <= self.stop
 
 class Constant(SparkField):
     """
@@ -182,7 +182,7 @@ class StringRange(SparkField):
             "alphabet", self.alphabet)
         return StringRange(new_a, new_b, new_alphabet)
 
-    def validate(self, validate_val: str | int | float):
+    def validate(self, validate_val: Union[str, int, float]):
         return isinstance(validate_val, str) \
                and self.from_length <= len(validate_val) <= self.to_length \
                and all(map(lambda ch: ch in self.alphabet, validate_val))
@@ -201,7 +201,7 @@ class Select(SparkField):
         assert all(map(lambda key: isinstance(key, set_type), list_select))
         self.select = list_select
 
-    def get(self) -> str | int | float:
+    def get(self) -> Union[str, int, float]:
         return random.choice(tuple(self.select))
 
     def intersect(self, other):
