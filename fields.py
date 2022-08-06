@@ -154,9 +154,9 @@ class StringRange(SparkField):
         return super().intersect(other)
 
     def apply_changes(self, changes: dict) -> SparkField:
-        new_a, new_b, new_alphabet = changes.get("from_length", self.from_length), changes.get("to_length",
-                                                                                               self.to_length), changes.get(
-            "alphabet", self.alphabet)
+        new_a, new_b, new_alphabet = changes.get("from_length", self.from_length), \
+                                     changes.get("to_length", self.to_length), \
+                                     changes.get("alphabet", self.alphabet)
         return StringRange(new_a, new_b, new_alphabet)
 
     def validate(self, validate_val: Union[str, int, float]):

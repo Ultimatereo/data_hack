@@ -1,17 +1,18 @@
 {
   "Cell": {
     "__cnt__": {
-      "value": 10
+      "value": 100000
     },
     "integer1": {
       "start": -100,
-      "stop": 120
+      "stop": 100
     },
     "float2": {
       "start": -5
     },
     "mymask": {
       "mask": "1###444###",
+      "alphabet": "78"
       "alphabet": "789"
     },
     "date1": {
@@ -27,7 +28,11 @@
   },
   "Cell2": {
     "__cnt__": {
-      "value": 10
+      "value": 100000
+    },
+    "iid": {
+      "start": -10000,
+      "stop": 10000
     }
   }
 }
