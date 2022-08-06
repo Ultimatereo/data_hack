@@ -29,7 +29,7 @@ a = Cell()
 
 b = Cell2()
 
-print(generate_paired(a, b, {'float3': 'float3', 'integer4': 'integer4'}))
+print(generate_paired(a, b, {'float3': 'float3', 'integer4': 'integer4', "selectList":"selectList"}))
 print(generate(a))
 print(generate(b))
 print("_______")

@@ -184,6 +184,36 @@ class StringRange(SparkField):
     def apply_changes(self, changes: dict) -> SparkField:
         new_a, new_b, new_alphabet = changes.get("a", self.a), changes.get("b", self.b), changes.get("a", self.alphabet)
         return StringRange(new_a, new_b, new_alphabet)
+
+
 class StringLen(StringRange):
     def __init__(self, length, alphabet=string.printable):
         super(StringLen, self).__init__(length, length, alphabet)
+
+
+class FromList(SparkField):
+    def __init__(self, select: List):
+        assert all(map(lambda key: isinstance(key, int), select)) or all(map(lambda key: isinstance(key, str), select))
+        assert len(select) > 0
+        self.select = select
+
+
+
+
+    def get(self) -> str:
+        print(self.select[random.randint(0, len(self.select) - 1)])
+        return self.select[random.randint(0, len(self.select) - 1)]
+
+    def intersect(self, other):
+        if isinstance(other, FromList):
+            if type(self.select[0]) != type(other.select[0]):
+                return None
+            list_intersection = list((set(self.select).intersection(other.select)))
+            if len(list_intersection) == 0:
+                return None
+            return FromList(list_intersection)
+        return super().intersect(other)
+
+    def apply_changes(self, changes: dict) -> SparkField:
+        new_select = changes.get("select", self.select)
+        return FromList(new_select)

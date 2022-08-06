@@ -9,6 +9,7 @@ class Cell:
     float3: float = FloatRange(1, 5)
     integer4: int = IntegerRange(1, 5)
     string1: str = StringLen(1, "abc")
+    selectList: str = FromList([1,6,3])
 
 
 @dataclass
@@ -17,3 +18,4 @@ class Cell2:
     integer4: int = IntegerRange(2, 3)
     integer5: int = IntegerRange(1, 5)
     integer6: int = IntegerRange(1, 5)
+    selectList: str = FromList([2,3,4])
