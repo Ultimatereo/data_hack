@@ -13,4 +13,4 @@ VOLUME ./result /result
 COPY . .
 
 
-CMD ["cd", "/config"]
+CMD ["python", "main.py"]
