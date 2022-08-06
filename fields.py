@@ -1,6 +1,6 @@
 from dataclasses import fields
 import random
-from typing import Optional, List
+from typing import *
 import os
 import json
 
@@ -73,69 +73,67 @@ class SparkField:
         pass
 
 
-class IntegerRange(SparkField):
+class Range(SparkField):
+    def __init__(self, data_type, a, b):
+        self.data_type = data_type
+        assert a <= b
+        self.a = None
+        self.b = None
+        self.set_range(a, b)
+
+    def set_range(self, a, b) -> SparkField:
+        assert a <= b
+        self.a = a
+        self.b = b
+        return self
+
+    def create_new(self, *args, **kwargs) -> SparkField:
+        pass
+
+    def get(self) -> Union[int, float]:
+        pass
+
+    def intersect(self, other) -> Optional[SparkField]:
+        if isinstance(other, Range):
+            if self.b < other.a or other.b < self.a or not (self.data_type is other.data_type):
+                return None
+            return self.create_new(max(self.a, other.a), min(self.b, other.b))
+        return super().intersect(other)
+
+    def apply_changes(self, changes: dict) -> SparkField:
+        new_a, new_b = changes.get("a", self.a), changes.get("b", self.b)
+        if new_a > new_b:
+            return self
+        return self.create_new(new_a, new_b)
+
+
+class IntegerRange(Range):
     """
     Generates random integer from a to b
     """
 
     def __init__(self, a, b):
-        assert a <= b
-        self.a = None
-        self.b = None
-        self.set_range(a, b)
+        super().__init__(int, a, b)
 
-    def set_range(self, a, b) -> SparkField:
-        assert a <= b
-        self.a = a
-        self.b = b
-        return self
+    @staticmethod
+    def create_new(*args, **kwargs):
+        return IntegerRange(*args, **kwargs)
 
     def get(self) -> int:
         return random.randint(self.a, self.b)
 
-    def intersect(self, other) -> Optional[SparkField]:
-        if isinstance(other, IntegerRange):
-            if self.b < other.a or other.b < self.a:
-                return None
-            return IntegerRange(max(self.a, other.a), min(self.b, other.b))
-        return super().intersect(other)
 
-    def apply_changes(self, changes: dict) -> SparkField:
-        new_a, new_b = changes.get("a", self.a), changes.get("b", self.b)
-        if new_a > new_b:
-            return self
-        return IntegerRange(new_a, new_b)
-
-
-class FloatRange(SparkField):
+class FloatRange(Range):
     """
     Generates random float from a to b
     """
 
     def __init__(self, a, b):
-        assert a <= b
-        self.a = None
-        self.b = None
-        self.set_range(a, b)
+        super().__init__(float, a, b)
 
-    def set_range(self, a, b) -> SparkField:
-        assert a <= b
-        self.a = a
-        self.b = b
-        return self
+    @staticmethod
+    def create_new(*args, **kwargs):
+        return FloatRange(*args, **kwargs)
 
     def get(self) -> int:
         return random.random() * (self.b - self.a) + self.a
-
-    def intersect(self, other) -> Optional[SparkField]:
-        if isinstance(other, FloatRange):
-            if self.b < other.a or other.b < self.a:
-                return None
-            return FloatRange(max(self.a, other.a), min(self.b, other.b))
-        return super().intersect(other)
-
-    def apply_changes(self, changes: dict) -> SparkField:
-        new_a, new_b = changes.get("a", self.a), changes.get("b", self.b)
-        if new_a > new_b:
-            return self
-        return FloatRange(new_a, new_b)
