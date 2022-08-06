@@ -9,3 +9,5 @@ class Cell:
     float2: float = FloatRange(1, 5)
     select: int = Select({1, 3, 2})
     mymask: int = IntegerMask("123###321##2", "01234")
+    string: str = StringRange(2, 5)
+    abcword: str = StringRange(4, 5, "abc")
