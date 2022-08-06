@@ -1,0 +1,14 @@
+{
+  "Cell": {
+    "__cnt__": {
+      "value": 5
+    },
+    "integer1": {
+      "start": -100,
+      "stop": 120
+    },
+    "float2": {
+      "start": -5
+    }
+  }
+}
