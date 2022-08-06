@@ -22,15 +22,21 @@
 
 
 from data import *
+import os
+import json
 
 a = Cell()
+
 b = Cell2()
 
 print(generate_paired(a, b, ['integer3', 'integer4']))
 print(generate(a))
 print(generate(b))
 print("_______")
-setattr(a, 'integer3', getattr(a, 'integer3').set_range(10, 20))
+# setattr(a, 'integer3', getattr(a, 'integer3').set_range(10, 20))
+
+load_config(a, "Cell.json")
+
 print("_______")
 print(generate_paired(a, b, ['integer3', 'integer4']))
 print(generate(a))

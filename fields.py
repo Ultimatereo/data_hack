@@ -1,10 +1,23 @@
 from dataclasses import fields
 import random
 from typing import Optional, List
+import os
+import json
 
 
 def fields_names(table):
     return map(lambda field: field.name, fields(table))
+
+
+def load_config(table, fp):
+    if fp in os.listdir():
+        with open(fp, "r") as conf:
+            apply_changes(table, json.load(conf))
+
+
+def apply_changes(table, changes: dict):
+    for field_name in changes:
+        setattr(table, field_name, getattr(table, field_name).apply_changes(changes.get(field_name, {})))
 
 
 def generate(table):
@@ -51,6 +64,14 @@ class SparkField:
         """
         return None
 
+    def apply_changes(self, changes: dict):
+        """
+        applies config to field
+        :param changes:
+        :return:
+        """
+        pass
+
 
 class NumberRange(SparkField):
     """
@@ -64,6 +85,7 @@ class NumberRange(SparkField):
         self.set_range(a, b)
 
     def set_range(self, a, b) -> SparkField:
+        assert a <= b
         self.a = a
         self.b = b
         return self
@@ -77,3 +99,9 @@ class NumberRange(SparkField):
                 return None
             return NumberRange(max(self.a, other.a), min(self.b, other.b))
         return super().intersect(other)
+
+    def apply_changes(self, changes: dict) -> SparkField:
+        new_a, new_b = changes.get("a", self.a), changes.get("b", self.b)
+        if new_a > new_b:
+            return self
+        return NumberRange(new_a, new_b)
