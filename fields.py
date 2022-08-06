@@ -174,19 +174,29 @@ class StringLen(StringRange):
         super(StringLen, self).__init__(length, length, alphabet)
 
 
-class Select(SparkField):
-    def __init__(self, select: set):
+class WeightSelect(SparkField):
+    def __init__(self, select: dict):
         assert len(select) > 0
-        list_select = list(select)
+        list_select = []
+        list_weight = []
+        for k, v in select.items():
+            list_select.append(k)
+            list_weight.append(v)
         set_type = type(list_select[0])
+        assert isinstance(list_select[0], (int, float, str))
         assert all(map(lambda key: isinstance(key, set_type), list_select))
+        assert all(map(lambda val: isinstance(val, (int, float, str)), list_weight))
         self.select = list_select
+        self.weight = list_weight
+        self.defaultdict = select
 
     def get(self) -> Union[str, int, float]:
-        return random.choice(tuple(self.select))
+        choise = random.choices(self.select, weights=self.weight)
+        assert len(choise) > 0
+        return choise[0]
 
     def intersect(self, other):
-        if isinstance(other, Select):
+        if isinstance(other, WeightSelect):
             if not isinstance(self.select[0], type(other.select[0])):
                 return None
             list_intersection = set(self.select).intersection(other.select)
@@ -203,8 +213,24 @@ class Select(SparkField):
             return None
         return super().intersect(other)
 
+    def validate(self, validate_val: Union[str, int, float]):
+        assert len(self.select) == 0
+        return isinstance(validate_val, type(self.select[0])) and validate_val in self.select
+
+    def apply_changes(self, changes: dict) -> SparkField:
+        new_select = changes.get("select", self.defaultdict)
+        assert isinstance(new_select, dict) and len(new_select) > 0
+        return WeightSelect(new_select)
+
+
+class Select(WeightSelect):
+    def __init__(self, select: set):
+        assert len(select) > 0
+        super().__init__(dict.fromkeys(select, 1))
+
     def apply_changes(self, changes: dict) -> SparkField:
         new_select = changes.get("select", self.select)
+        assert isinstance(new_select, list) and len(new_select) > 0
         return Select(new_select)
 
 
@@ -242,7 +268,7 @@ class Mask(SparkField):
 
 
 class IntegerMask(Mask):
-    def __init__(self, mask, alphabet="0123456789"):
+    def __init__(self, mask, alphabet=string.digits):
         if not alphabet.isnumeric():
             raise Exception("Alphabet of Integer Mask should contain just numbers! But there were some letters found.")
         super().__init__(mask, alphabet)
