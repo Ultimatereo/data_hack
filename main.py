@@ -29,7 +29,7 @@ a = Cell()
 
 b = Cell2()
 
-print(generate_paired(a, b, ['integer3', 'integer4']))
+print(generate_paired(a, b, ['float3', 'integer4']))
 print(generate(a))
 print(generate(b))
 print("_______")
@@ -38,6 +38,6 @@ print("_______")
 load_config(a, "Cell.json")
 
 print("_______")
-print(generate_paired(a, b, ['integer3', 'integer4']))
+print(generate_paired(a, b, ['float3', 'integer4']))
 print(generate(a))
 print(generate(b))
