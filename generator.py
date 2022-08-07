@@ -1,5 +1,3 @@
-from dataclasses import fields
-from typing import List
 from fields import fields_names
 
 
@@ -49,9 +47,14 @@ def generator(table):
 
 
 def paired_generator(table1, table2, pairing: dict):
-    assert len(pairing) > 0
-    assert all(map(lambda key: key in fields_names(table1), pairing.keys()))
-    assert all(map(lambda key: key in fields_names(table2), pairing.values()))
+    if len(pairing) <= 0:
+        raise Exception(f"There are no keys for pairing two tables {table1} and {table2}!")
+    if not all(map(lambda key: key in fields_names(table1), pairing.keys())):
+        raise Exception(f"There is a key that is mentioned in config but couldn't be found"
+                        f" in the first table {table1}!")
+    if not all(map(lambda key: key in fields_names(table2), pairing.values())):
+        raise Exception(f"There is a key that is mentioned in config but couldn't be found"
+                        f" in the second table {table2}!")
     intersect_generators = dict()
     for key1, key2 in pairing.items():
         try:
