@@ -10,7 +10,7 @@
         "export": {
           "dir_name": "CellGen",
           "data_type": "parquet",
-          "export_mode": "append"
+          "mode": "append"
         },
         "config": "config.json"
       }
