@@ -9,7 +9,7 @@
         },
         "export": {
           "dir_name": "Cats",
-          "data_type": "parquet",
+          "data_type": "csv",
           "mode": "append"
         },
         "config": "cats_config.json"
@@ -19,7 +19,7 @@
       "job": "show_data",
       "args": {
         "dir_name": "Cats",
-        "data_type": "parquet",
+        "data_type": "csv",
         "count": 30
       }
     }

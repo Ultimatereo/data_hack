@@ -158,10 +158,10 @@ def make_task(task: dict):
         script_name = table.get("script_name")
         class_name = table.get("class_name")
         dir_name = export.get("dir_name")
-        export_type = export.get("export_type", None)
-        export_mode = export.get("export_mode", None)
+        data_type = export.get("data_type", None)
+        mode = export.get("mode", None)
         table_config = args.get("config", None)
-        solo_generate(script_name, class_name, table_config, dir_name, export_type, export_mode)
+        solo_generate(script_name, class_name, table_config, dir_name, data_type, mode)
 
     def make_paired_generate(args: dict):
         check_required_args(["table1", "table2", "intersect_keys"], args)

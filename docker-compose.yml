@@ -1,16 +1,36 @@
 services:
   main:
     build: .
-    entrypoint: ["python", "main.py", "anime.json"]
+    entrypoint: [ "python", "main.py" ]
     volumes:
       - ./result:/result
       - ./config:/config
       - ./dataclass:/dataclass
 
-
   test1:
     build: .
-    entrypoint: ["python", "test.py", "test.json"]
+    entrypoint: [ "python", "main.py", "1aCats.json" ]
+    volumes:
+      - ./result:/result
+      - ./config:/config
+      - ./dataclass:/dataclass
+  test2:
+    build: .
+    entrypoint: [ "python", "main.py", "1bFullTest.json" ]
+    volumes:
+      - ./result:/result
+      - ./config:/config
+      - ./dataclass:/dataclass
+  test3:
+    build: .
+    entrypoint: [ "python", "main.py", "2aBank.json" ]
+    volumes:
+      - ./result:/result
+      - ./config:/config
+      - ./dataclass:/dataclass
+  test4:
+    build: .
+    entrypoint: [ "python", "main.py", "2bAnime.json" ]
     volumes:
       - ./result:/result
       - ./config:/config
