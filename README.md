@@ -83,31 +83,78 @@ stop_year, stop_month, stop_day, stop_hour, stop_minute | время метка 
 
 #### Пример настроек сущности в конфиге
 ```
+full_fields_config.json
 {
-  "Cell": {
-    "__cnt__": {
-      "value": 10
+  "FullFields": {
+    "integerRange": {
+      "start": -15,
+      "stop": 40
     },
-    "integer1": {
-      "start": -100,
-      "stop": 100
+    "floatRange": {
+      "start": -5,
+      "stop": 5
     },
-    "float2": {
-      "start": -5
+    "constant": {
+      "value": 789
     },
-    "mymask": {
-      "mask": "1###444###",
-      "alphabet": "789"
+    "stringRange": {
+      "from_length": 2,
+      "to_length": 4,
+      "alphabet": "abcdef"
     },
-    "date1": {
-      "start_year": 2022,
-      "stop_year": 2022
+    "stringLen": {
+      "length": 5,
+      "alphabet": "tyuiop"
     },
-    "date2": {
-      "start_year": 2022,
-      "stop_year": 2022,
-      "start_month": 5,
-      "stop_month": 5
+    "selectInt": {
+      "select": [
+        12,
+        13,
+        14
+      ]
+    },
+    "selectFloat": {
+      "select": [
+        1.111,
+        2.222,
+        3.333,
+        4.444,
+        5.555
+      ]
+    },
+    "weightSelectStr": {
+      "select": {
+        "superOften": 6,
+        "superRare": 1
+      }
+    },
+    "integerMask": {
+      "mask": "789######",
+      "alphabet": "1234"
+    },
+    "stringMask": {
+      "mask": "######",
+      "alphabet": "ABCDEF"
+    },
+    "dateField": {
+      "start_year": 1988,
+      "start_month": 2,
+      "start_day": 6,
+      "stop_year": 2000,
+      "stop_month": 11,
+      "stop_day": 11
+    },
+    "timestampField": {
+      "start_year": 1988,
+      "start_month": 2,
+      "start_day": 6,
+      "start_hour": 10,
+      "start_minute": 32,
+      "stop_year": 2000,
+      "stop_month": 11,
+      "stop_day": 11,
+      "stop_hour": 10,
+      "stop_minute": 32
     }
   }
 }
@@ -150,3 +197,75 @@ dir_name | имя папки, из которой демонстрируется
 data_type | тип данных, в котором хранится таблица
 count | количество первых строк столбца, которые надо вывести в консоль (по дефолту 20)
 
+#### Пример настроек запуска генератора
+
+```
+default.json
+{
+  "tasks": [
+    {
+      "job": "solo_generate",
+      "args": {
+        "table": {
+          "script_name": "CellClass",
+          "class_name": "Cell"
+        },
+        "export": {
+          "dir_name": "CellGen",
+          "data_type": "parquet",
+          "mode": "append"
+        },
+        "config": "config.json"
+      }
+    },
+    {
+      "job": "show_data",
+      "args": {
+        "dir_name": "CellGen",
+        "data_type": "parquet",
+        "count": 5
+      }
+    },
+    {
+      "job": "paired_generate",
+      "args": {
+        "table1": {
+          "script_name": "CellClass",
+          "class_name": "Cell"
+        },
+        "table2": {
+          "script_name": "Cell2Class",
+          "class_name": "Cell2"
+        },
+        "intersect_keys": {
+          "integer1": "iid",
+          "float2": "acceleration",
+          "abcword": "word"
+        },
+        "export": {
+          "dir_name1": "CellPrd",
+          "dir_name2": "Cell2Prd",
+          "data_type": "parquet"
+        },
+        "config": "config.json"
+      }
+    },
+    {
+      "job": "show_data",
+      "args": {
+        "dir_name": "CellPrd",
+        "data_type": "parquet",
+        "count": 10
+      }
+    },
+    {
+      "job": "show_data",
+      "args": {
+        "dir_name": "Cell2Prd",
+        "data_type": "parquet",
+        "count": 10
+      }
+    }
+  ]
+}
+```
