@@ -175,7 +175,7 @@ class StringLen(StringRange):
 
     def apply_changes(self, changes: dict) -> SparkField:
         length, new_alphabet = changes.get("length", self.from_length), changes.get("alphabet", self.alphabet)
-        return StringRange(length, new_alphabet)
+        return StringRange(length, length, new_alphabet)
 
 
 class WeightSelect(SparkField):

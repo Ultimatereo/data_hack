@@ -6,7 +6,7 @@ from generator import *
 import json
 
 DATA_TYPES = {"csv", "json", "parquet"}
-EXPORT_MODES = {"append", "overwrite", "ignore"}
+EXPORT_MODES = {"append", "overwrite", "ignore", "error"}
 
 spark = SparkSession.builder.appName('Data_hack').getOrCreate()
 
@@ -200,11 +200,15 @@ def make_task(task: dict):
 
 if __name__ == '__main__':
     try:
-        with open("config/app/test1.json", "r") as app_config_file:
+        with open("config/app/FullTest.json", "r") as app_config_file:
             app_config = json.load(app_config_file)
         if "tasks" not in app_config:
             raise Exception("There are no tasks in the app config")
         for task in app_config.get("tasks"):
-            make_task(task)
+            try:
+                make_task(task)
+            except Exception as e:
+                print("Task failed")
+                print(e)
     except Exception as e:
         print(e)
