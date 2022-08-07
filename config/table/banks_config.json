@@ -1,0 +1,29 @@
+{
+  "People": {
+    "__cnt__": {
+      "value": 10000
+    },
+    "iid": {
+      "stop": 1000000
+    },
+    "sex": {
+      "select": [
+        "male"
+      ]
+    }
+  },
+  "Bank": {
+    "__cnt__": {
+      "value": 10000
+    },
+    "people_id": {
+      "stop": 1000000
+    },
+    "money": {
+      "start": 500
+    },
+    "security_code": {
+      "alphabet": "67890"
+    }
+  }
+}

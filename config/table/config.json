@@ -1,0 +1,37 @@
+{
+  "Cell": {
+    "__cnt__": {
+      "value": 100
+    },
+    "integer1": {
+      "start": -100,
+      "stop": 100
+    },
+    "float2": {
+      "start": -5
+    },
+    "mymask": {
+      "mask": "1###444###",
+      "alphabet": "789"
+    },
+    "date1": {
+      "start_year": 2022,
+      "stop_year": 2022
+    },
+    "date2": {
+      "start_year": 2022,
+      "stop_year": 2022,
+      "start_month": 5,
+      "stop_month": 5
+    }
+  },
+  "Cell2": {
+    "__cnt__": {
+      "value": 100
+    },
+    "iid": {
+      "start": -10000,
+      "stop": 10000
+    }
+  }
+}

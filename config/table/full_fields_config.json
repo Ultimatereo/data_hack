@@ -1,0 +1,74 @@
+{
+  "FullFields": {
+    "integerRange": {
+      "start": -15,
+      "stop": 40
+    },
+    "floatRange": {
+      "start": -5,
+      "stop": 5
+    },
+    "constant": {
+      "value": 789
+    },
+    "stringRange": {
+      "from_length": 2,
+      "to_length": 4,
+      "alphabet": "abcdef"
+    },
+    "stringLen": {
+      "length": 5,
+      "alphabet": "tyuiop"
+    },
+    "selectInt": {
+      "select": [
+        12,
+        13,
+        14
+      ]
+    },
+    "selectFloat": {
+      "select": [
+        1.111,
+        2.222,
+        3.333,
+        4.444,
+        5.555
+      ]
+    },
+    "weightSelectStr": {
+      "select": {
+        "superOften": 6,
+        "superRare": 1
+      }
+    },
+    "integerMask": {
+      "mask": "789######",
+      "alphabet": "1234"
+    },
+    "stringMask": {
+      "mask": "######",
+      "alphabet": "ABCDEF"
+    },
+    "dateField": {
+      "start_year": 1988,
+      "start_month": 2,
+      "start_day": 6,
+      "stop_year": 2000,
+      "stop_month": 11,
+      "stop_day": 11
+    },
+    "timestampField": {
+      "start_year": 1988,
+      "start_month": 2,
+      "start_day": 6,
+      "start_hour": 10,
+      "start_minute": 32,
+      "stop_year": 2000,
+      "stop_month": 11,
+      "stop_day": 11,
+      "stop_hour": 10,
+      "stop_minute": 32
+    }
+  }
+}
