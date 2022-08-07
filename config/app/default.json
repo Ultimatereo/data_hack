@@ -1,0 +1,26 @@
+{
+  "tasks": [
+    {
+      "job": "solo_generate",
+      "args": {
+        "table": {
+          "script_name": "CellClass",
+          "class_name": "Cell"
+        },
+        "export": {
+          "dir_name": "CellGen",
+          "data_type": "parquet"
+        },
+        "config": "config.json"
+      }
+    },
+    {
+      "job": "show_data",
+      "args": {
+        "dir_name": "CellGen",
+        "data_type": "parquet",
+        "count": 5
+      }
+    }
+  ]
+}
