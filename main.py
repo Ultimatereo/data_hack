@@ -200,7 +200,7 @@ def make_task(task: dict):
 
 if __name__ == '__main__':
     try:
-        with open("config/app/banks.json", "r") as app_config_file:
+        with open("config/app/cats.json", "r") as app_config_file:
             app_config = json.load(app_config_file)
         if "tasks" not in app_config:
             raise Exception("There are no tasks in the app config")

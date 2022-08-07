@@ -1,7 +1,7 @@
 {
   "Cat": {
     "__cnt__": {
-      "value": 500
+      "value": 10000
     },
     "color": {
       "select": [
