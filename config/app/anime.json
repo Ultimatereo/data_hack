@@ -12,8 +12,8 @@
           "class_name": "AnimeFilm"
         },
         "intersect_keys": {
-          "series_name": "film_name",
-          "series_duration": "film_duration",
+          "main_tyan_number": "main_tyan_number",
+          "producer_id": "producer_id",
           "seasons_number": "sequels_number"
         },
         "export": {
