@@ -4,6 +4,7 @@ from pprint import pprint
 from fields import *
 from generator import *
 import json
+import sys
 
 DATA_TYPES = {"csv", "json", "parquet"}
 EXPORT_MODES = {"append", "overwrite", "ignore"}
@@ -56,12 +57,6 @@ def export_dataframe(df, dir_name, export_type, export_mode):
     if export_mode not in EXPORT_MODES:
         raise Exception(f"Unknown export_mode '{export_mode}'. It must be one of {EXPORT_MODES}")
     df.write.format(export_type).mode(export_mode).option("header", True).save("result/" + dir_name)
-    # if export_type == "json":
-    #     df.write.json("result/" + dir_name)
-    # elif export_type == "csv":
-    #     df.write.option("header", True).csv("result/" + dir_name)
-    # elif export_type == "parquet":
-    #     df.write.parquet("result/" + dir_name)
 
 
 def solo_generate(table_script_name, table_class_name, table_config, dir_name, export_type, export_mode):
@@ -113,7 +108,6 @@ def show_data(dir_name, data_type, count):
     if data_type not in DATA_TYPES:
         raise Exception(f"Unknown data_type '{data_type}'. It must be one of {DATA_TYPES}")
     df = spark.read.format(data_type).option("header", True).load("result/" + dir_name)
-    # df = spark.read.csv("result/" + dir_name, header=True)
     df.show(count)
     print("Total rows:", df.count())
     df.printSchema()
@@ -206,8 +200,13 @@ def make_task(task: dict):
 
 
 if __name__ == '__main__':
+    if len(sys.argv) != 2:
+        print("You have to run 'python3 main.py name_of_app_config'")
+        print("Where 'name_of_app_config' is name of app config to run")
+        exit(0)
+    app_config_name = sys.argv[1]
     try:
-        with open("config/app/anime.json", "r") as app_config_file:
+        with open(f"config/app/{app_config_name}", "r") as app_config_file:
             app_config = json.load(app_config_file)
         if "tasks" not in app_config:
             raise Exception("There are no tasks in the app config")
