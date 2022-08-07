@@ -1,9 +1,9 @@
 import random
 import string
+from dataclasses import fields
 from datetime import datetime, date, time
 from typing import *
 
-from dataclasses import fields
 from faker import Faker
 
 
@@ -62,7 +62,8 @@ class SparkField:
 class Range(SparkField):
     def __init__(self, data_type, start, stop):
         self.data_type = data_type
-        assert start <= stop
+        if start > stop:
+            raise Exception(f"Stop of the range {stop} is before the start {start}!")
         self.start = start
         self.stop = stop
 
@@ -136,9 +137,10 @@ class Constant(SparkField):
 
 class StringRange(SparkField):
     def __init__(self, from_length, to_length, alphabet=string.printable):
-        assert from_length >= 0 and to_length >= 0
-        assert from_length <= to_length
-        assert len(alphabet) > 0
+        if not ((from_length >= 0 and to_length >= 0) and (from_length <= to_length)):
+            raise Exception(f"From_length {from_length} and to_length {to_length} for StringRange are invalid!")
+        if len(alphabet) <= 0:
+            raise Exception("Alphabet for StringRange is Empty!")
         self.from_length = from_length
         self.to_length = to_length
         self.alphabet = alphabet
@@ -180,23 +182,28 @@ class StringLen(StringRange):
 
 class WeightSelect(SparkField):
     def __init__(self, select: dict):
-        assert len(select) > 0
+        if len(select) <= 0:
+            raise Exception("Weighted Select dictionary for Select is Empty!")
         list_select = []
         list_weight = []
         for k, v in select.items():
             list_select.append(k)
             list_weight.append(v)
         set_type = type(list_select[0])
-        assert isinstance(list_select[0], (int, float, str))
-        assert all(map(lambda key: isinstance(key, set_type), list_select))
-        assert all(map(lambda val: isinstance(val, (int, float, str)), list_weight))
+        if not isinstance(list_select[0], (int, float, str)):
+            raise Exception(f"Member of the list for selection has unknown type: {type(list_select[0])}!")
+        if not all(map(lambda key: isinstance(key, set_type), list_select)):
+            raise Exception("Member of the list for selection has unknown type!")
+        if not all(map(lambda val: isinstance(val, (int, float, str)), list_weight)):
+            raise Exception("Member of the weight for weighted selection has unknown type!")
         self.select = list_select
         self.weight = list_weight
         self.defaultdict = select
 
     def get(self) -> Union[str, int, float]:
         choise = random.choices(self.select, weights=self.weight)
-        assert len(choise) > 0
+        if len(choise) <= 0:
+            raise Exception("Choice somehow is less than zero in weighted select!")
         return choise[0]
 
     def intersect(self, other):
@@ -218,29 +225,38 @@ class WeightSelect(SparkField):
         return super().intersect(other)
 
     def validate(self, validate_val: Union[str, int, float]):
-        assert len(self.select) == 0
+        if len(self.select) == 0:
+            raise Exception("Select is empty!")
         return isinstance(validate_val, type(self.select[0])) and validate_val in self.select
 
     def apply_changes(self, changes: dict) -> SparkField:
         new_select = changes.get("select", self.defaultdict)
-        assert isinstance(new_select, dict) and len(new_select) > 0
+        if not (isinstance(new_select, dict) and len(new_select) > 0):
+            raise Exception(f"New select dictionary from config is invalid! It's not dictionary or it's empty."
+                            f" New select: {new_select}.")
         return WeightSelect(new_select)
 
 
 class Select(WeightSelect):
     def __init__(self, select: set):
-        assert len(select) > 0
+        if len(select) <= 0:
+            raise Exception("Select list for Select is Empty!")
         super().__init__(dict.fromkeys(select, 1))
 
     def apply_changes(self, changes: dict) -> SparkField:
         new_select = changes.get("select", self.select)
-        assert isinstance(new_select, list) and len(new_select) > 0
+        if not (isinstance(new_select, list) and len(new_select) > 0):
+            raise Exception(f"New select list from config is invalid! It's not list or it's empty."
+                            f" New list: {new_select}.")
         return Select(new_select)
 
 
 class Mask(SparkField):
     def __init__(self, mask, alphabet):
-        assert len(mask) > 0
+        if not (isinstance(mask, str) and len(mask) > 0):
+            raise Exception(f"Mask {mask} is not string or empty!")
+        if not (isinstance(alphabet, str) and len(alphabet) > 0):
+            raise Exception(f"Alphabet {alphabet} is not string or empty!")
         self.mask = mask
         self.alphabet = alphabet
 
@@ -257,6 +273,10 @@ class Mask(SparkField):
     def apply_changes(self, changes: dict) -> SparkField:
         new_mask = changes.get("mask", self.mask)
         new_alphabet = changes.get("alphabet", self.alphabet)
+        if not (isinstance(new_mask, str) and len(new_mask) > 0):
+            raise Exception(f"New mask from config {new_mask} is not string or empty!")
+        if not (isinstance(new_alphabet, str) and len(new_alphabet) > 0):
+            raise Exception(f"New alphabet from config {new_alphabet} is not string or empty!")
         return self.create_new(new_mask, new_alphabet)
 
     def validate(self, validate_val: Union[str, int, float]):
@@ -301,7 +321,7 @@ class Time(SparkField):
         self.stop = None
 
     def validate(self, validate_val: Union[str, int, float]):
-        if (isinstance(validate_val, str)):
+        if isinstance(validate_val, str):
             try:
                 self.check(validate_val)
                 return True
@@ -354,7 +374,8 @@ class Time(SparkField):
 class Date(Time):
     def __init__(self, start=date(1970, 1, 1), stop=date.today()):
         super().__init__()
-        assert start <= stop
+        if start > stop:
+            raise Exception(f"Date's stop {stop} is earlier than date's start {start}!")
         self.start = start
         self.stop = stop
 
@@ -371,7 +392,8 @@ class Date(Time):
 class TimeStamp(Time):
     def __init__(self, start=datetime(1970, 1, 1, 0, 0, 0), stop=datetime.today()):
         super().__init__()
-        assert start <= stop
+        if start > stop:
+            raise Exception(f"Timestamp's stop {stop} is earlier than timestamp's start {start}!")
         self.start = start
         self.stop = stop
 
