@@ -1,0 +1,12 @@
+{
+  "Cat": {
+    "__cnt__": {
+      "value": 500
+    },
+    "color": {
+      "select": [
+        "orange", "blue"
+      ]
+    }
+  }
+}
