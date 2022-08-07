@@ -1,0 +1,44 @@
+{
+  "tasks": [
+    {
+      "job": "paired_generate",
+      "args": {
+        "table1": {
+          "script_name": "AnimeSeriesClass",
+          "class_name": "AnimeSeries"
+        },
+        "table2": {
+          "script_name": "AnimeFilmClass",
+          "class_name": "AnimeFilm"
+        },
+        "intersect_keys": {
+          "series_name": "film_name",
+          "series_duration": "film_duration",
+          "seasons_number": "sequels_number"
+        },
+        "export": {
+          "dir_name1": "AnimeSeries",
+          "dir_name2": "AnimeFilm",
+          "data_type": "parquet",
+          "mode": "append"
+        }
+      }
+    },
+    {
+      "job": "show_data",
+      "args": {
+        "dir_name": "AnimeSeries",
+        "data_type": "parquet",
+        "count": 10
+      }
+    },
+    {
+      "job": "show_data",
+      "args": {
+        "dir_name": "AnimeFilm",
+        "data_type": "parquet",
+        "count": 10
+      }
+    }
+  ]
+}

@@ -7,6 +7,24 @@
       "select": [
         "orange", "blue"
       ]
+    },
+    "action": {
+      "select": [
+        "flying", "digging", "meowing", "hissing"
+      ]
+    },
+    "birth_date": {
+      "start_year": 2003,
+      "stop_year": 2022
+    },
+    "pet_name": {
+      "from_length": 2,
+      "to_length": 5,
+      "alphabet": "ct"
+    },
+    "meow_volume": {
+      "start": 10,
+      "stop": 2000
     }
   }
 }
