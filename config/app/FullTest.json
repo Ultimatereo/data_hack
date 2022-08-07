@@ -1,0 +1,27 @@
+{
+  "tasks": [
+    {
+      "job": "solo_generate",
+      "args": {
+        "table": {
+          "script_name": "FullFieldsClass",
+          "class_name": "FullFields"
+        },
+        "export": {
+          "dir_name": "FullFields",
+          "data_type": "parquet",
+          "mode": "overwrite"
+        },
+        "config": "full_fields_config.json"
+      }
+    },
+    {
+      "job": "show_data",
+      "args": {
+        "dir_name": "FullFields",
+        "data_type": "parquet",
+        "count": 30
+      }
+    }
+  ]
+}
