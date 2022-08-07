@@ -55,7 +55,7 @@ def export_dataframe(df, dir_name, export_type, export_mode):
         raise Exception(f"Unknown export_type '{export_type}'. It must be one of {DATA_TYPES}")
     if export_mode not in EXPORT_MODES:
         raise Exception(f"Unknown export_mode '{export_mode}'. It must be one of {EXPORT_MODES}")
-    df.write.format(export_type).mode(export_mode).save(dir_name)
+    df.write.format(export_type).mode(export_mode).save("result/" + dir_name)
 
 
 def solo_generate(table_script_name, table_class_name, table_config, dir_name, export_type, export_mode):
@@ -106,7 +106,7 @@ def show_data(dir_name, data_type, count):
         count = 20
     if data_type not in DATA_TYPES:
         raise Exception(f"Unknown data_type '{data_type}'. It must be one of {DATA_TYPES}")
-    df = spark.read.format(data_type).load(dir_name)
+    df = spark.read.format(data_type).load("result/" + dir_name)
     df.show(count)
     print("Total rows:", df.count())
     df.printSchema()
@@ -163,7 +163,7 @@ def make_task(task: dict):
         solo_generate(script_name, class_name, table_config, dir_name, export_type, export_mode)
 
     def make_paired_generate(args: dict):
-        check_required_args(["table1", "table2", "intersect_keys", "config"], args)
+        check_required_args(["table1", "table2", "intersect_keys"], args)
         table1 = args.get("table1")
         table2 = args.get("table2")
         check_required_args(["script_name", "class_name"], table1)
@@ -173,7 +173,7 @@ def make_task(task: dict):
         table2_script_name = table2.get("script_name")
         table2_class_name = table2.get("class_name")
         intersect_keys = args.get("intersect_keys")
-        table_config = args.get("config")
+        table_config = args.get("config", None)
         export = args.get("export", {})
         dir_name1 = export.get("dir_name1", None)
         dir_name2 = export.get("dir_name2", None)
@@ -200,7 +200,7 @@ def make_task(task: dict):
 
 if __name__ == '__main__':
     try:
-        with open("config/app/default.json", "r") as app_config_file:
+        with open("config/app/banks.json", "r") as app_config_file:
             app_config = json.load(app_config_file)
         if "tasks" not in app_config:
             raise Exception("There are no tasks in the app config")

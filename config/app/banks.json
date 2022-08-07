@@ -1,0 +1,43 @@
+{
+  "tasks": [
+    {
+      "job": "paired_generate",
+      "args": {
+        "table1": {
+          "script_name": "PeopleClass",
+          "class_name": "People"
+        },
+        "table2": {
+          "script_name": "BankAccount",
+          "class_name": "Bank"
+        },
+        "intersect_keys": {
+          "iid": "people_id"
+        },
+        "export": {
+          "dir_name1": "People",
+          "dir_name2": "Bank",
+          "data_type": "parquet",
+          "mode": "append"
+        },
+        "config": "banks_config.json"
+      }
+    },
+    {
+      "job": "show_data",
+      "args": {
+        "dir_name": "People",
+        "data_type": "parquet",
+        "count": 10
+      }
+    },
+    {
+      "job": "show_data",
+      "args": {
+        "dir_name": "Bank",
+        "data_type": "parquet",
+        "count": 10
+      }
+    }
+  ]
+}
