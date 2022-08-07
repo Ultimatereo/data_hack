@@ -150,11 +150,10 @@ def make_task(task: dict):
         show_data(dir_name, data_type, count)
 
     def make_solo_generate(args: dict):
-        check_required_args(["table", "export"], args)
+        check_required_args(["table"], args)
         table = args.get("table")
         check_required_args(["script_name", "class_name"], table)
-        export = args.get("export")
-        check_required_args(["dir_name"], export)
+        export = args.get("export", {})
         script_name = table.get("script_name")
         class_name = table.get("class_name")
         dir_name = export.get("dir_name")
@@ -163,8 +162,29 @@ def make_task(task: dict):
         table_config = args.get("config", None)
         solo_generate(script_name, class_name, table_config, dir_name, export_type, export_mode)
 
+    def make_paired_generate(args: dict):
+        check_required_args(["table1", "table2", "intersect_keys", "config"], args)
+        table1 = args.get("table1")
+        table2 = args.get("table2")
+        check_required_args(["script_name", "class_name"], table1)
+        check_required_args(["script_name", "class_name"], table2)
+        table1_script_name = table1.get("script_name")
+        table1_class_name = table1.get("class_name")
+        table2_script_name = table2.get("script_name")
+        table2_class_name = table2.get("class_name")
+        intersect_keys = args.get("intersect_keys")
+        table_config = args.get("config")
+        export = args.get("export", {})
+        dir_name1 = export.get("dir_name1", None)
+        dir_name2 = export.get("dir_name2", None)
+        export_type = export.get("data_type", None)
+        export_mode = export.get("mode", None)
+        intersect_generate(table1_script_name, table1_class_name, table2_script_name, table2_class_name,
+                           intersect_keys, table_config, dir_name1, dir_name2, export_type, export_mode)
+
     MAKERS = {"show_data": make_show_data,
-              "solo_generate": make_solo_generate}
+              "solo_generate": make_solo_generate,
+              "paired_generate": make_paired_generate}
 
     if "job" not in task:
         raise Exception("There is no job in task")
