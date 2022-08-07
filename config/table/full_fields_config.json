@@ -1,5 +1,8 @@
 {
   "FullFields": {
+    "__cnt__": {
+      "value": 10000
+    },
     "integerRange": {
       "start": -15,
       "stop": 40

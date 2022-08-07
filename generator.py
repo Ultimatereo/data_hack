@@ -1,39 +1,5 @@
-from dataclasses import fields
-from typing import List
 from fields import fields_names
 
-
-#
-# def generate_paired(table1, table2, keys: dict):
-#     """
-#     Generates random row in two tables that paired by keys
-#     Pairing: {keyFirstTable: keySecondTable}
-#     :param table1:
-#     :param table2:
-#     :param keys:
-#     :return:
-#     """
-#     assert len(keys) > 0
-#     keys_table1 = keys.keys()
-#     keys_table2 = keys.values()
-#     assert all(map(lambda key: key in fields_names(table1), keys_table1))
-#     assert all(map(lambda key: key in fields_names(table2), keys_table2))
-#
-#     intersect_data_first = {}
-#     intersect_data_second = {}
-#     for key in keys:
-#         intersect_generator = getattr(table1, key).intersect(getattr(table2, keys.get(key)))
-#         val = None
-#         if not (intersect_generator is None):
-#             val = intersect_generator.get()
-#         intersect_data_first[key] = intersect_data_second[keys.get(key)] = val
-#
-#     first = {i: getattr(table1, i).get() for i in fields_names(table1) if i not in keys_table1}
-#     second = {i: getattr(table2, i).get() for i in fields_names(table2) if i not in keys_table2}
-#     first = {**first, **intersect_data_first}
-#     second = {**second, **intersect_data_second}
-#     assert all(map(lambda key: first.get(key) == second.get(keys.get(key)), keys))
-#     return first, second
 
 def generate(table):
     """
@@ -49,9 +15,14 @@ def generator(table):
 
 
 def paired_generator(table1, table2, pairing: dict):
-    assert len(pairing) > 0
-    assert all(map(lambda key: key in fields_names(table1), pairing.keys()))
-    assert all(map(lambda key: key in fields_names(table2), pairing.values()))
+    if len(pairing) <= 0:
+        raise Exception(f"There are no keys for pairing two tables {table1} and {table2}!")
+    if not all(map(lambda key: key in fields_names(table1), pairing.keys())):
+        raise Exception(f"There is a key that is mentioned in config but couldn't be found"
+                        f" in the first table {table1}!")
+    if not all(map(lambda key: key in fields_names(table2), pairing.values())):
+        raise Exception(f"There is a key that is mentioned in config but couldn't be found"
+                        f" in the second table {table2}!")
     intersect_generators = dict()
     for key1, key2 in pairing.items():
         try:

@@ -4,9 +4,10 @@ from pprint import pprint
 from fields import *
 from generator import *
 import json
+import sys
 
 DATA_TYPES = {"csv", "json", "parquet"}
-EXPORT_MODES = {"append", "overwrite", "ignore", "error"}
+EXPORT_MODES = {"append", "overwrite", "ignore"}
 
 spark = SparkSession.builder.appName('Data_hack').getOrCreate()
 
@@ -55,7 +56,7 @@ def export_dataframe(df, dir_name, export_type, export_mode):
         raise Exception(f"Unknown export_type '{export_type}'. It must be one of {DATA_TYPES}")
     if export_mode not in EXPORT_MODES:
         raise Exception(f"Unknown export_mode '{export_mode}'. It must be one of {EXPORT_MODES}")
-    df.write.format(export_type).mode(export_mode).save("result/" + dir_name)
+    df.write.format(export_type).mode(export_mode).option("header", True).save("result/" + dir_name)
 
 
 def solo_generate(table_script_name, table_class_name, table_config, dir_name, export_type, export_mode):
@@ -106,7 +107,7 @@ def show_data(dir_name, data_type, count):
         count = 20
     if data_type not in DATA_TYPES:
         raise Exception(f"Unknown data_type '{data_type}'. It must be one of {DATA_TYPES}")
-    df = spark.read.format(data_type).load("result/" + dir_name)
+    df = spark.read.format(data_type).option("header", True).load("result/" + dir_name)
     df.show(count)
     print("Total rows:", df.count())
     df.printSchema()
@@ -199,16 +200,17 @@ def make_task(task: dict):
 
 
 if __name__ == '__main__':
+    if len(sys.argv) != 2:
+        print("You have to run 'python3 main.py name_of_app_config'")
+        print("Where 'name_of_app_config' is name of app config to run")
+        exit(0)
+    app_config_name = sys.argv[1]
     try:
-        with open("config/app/FullTest.json", "r") as app_config_file:
+        with open(f"config/app/{app_config_name}", "r") as app_config_file:
             app_config = json.load(app_config_file)
         if "tasks" not in app_config:
             raise Exception("There are no tasks in the app config")
         for task in app_config.get("tasks"):
-            try:
-                make_task(task)
-            except Exception as e:
-                print("Task failed")
-                print(e)
+            make_task(task)
     except Exception as e:
         print(e)

@@ -19,16 +19,17 @@
         "export": {
           "dir_name1": "AnimeSeries",
           "dir_name2": "AnimeFilm",
-          "data_type": "parquet",
+          "data_type": "json",
           "mode": "append"
-        }
+        },
+        "config": "anime_config.json"
       }
     },
     {
       "job": "show_data",
       "args": {
         "dir_name": "AnimeSeries",
-        "data_type": "parquet",
+        "data_type": "json",
         "count": 10
       }
     },
@@ -36,7 +37,7 @@
       "job": "show_data",
       "args": {
         "dir_name": "AnimeFilm",
-        "data_type": "parquet",
+        "data_type": "json",
         "count": 10
       }
     }

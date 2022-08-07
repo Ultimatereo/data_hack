@@ -1,7 +1,15 @@
 {
   "AnimeSeries": {
+    "__cnt__": {
+      "value": 10000
+    },
     "episodes_number_in_season": {
       "stop": 1234
+    }
+  },
+  "AnimeFilm": {
+    "__cnt__": {
+      "value": 10000
     }
   }
 }

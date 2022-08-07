@@ -11,8 +11,7 @@
           "dir_name": "FullFields",
           "data_type": "parquet",
           "mode": "overwrite"
-        },
-        "config": "full_fields_config.json"
+        }
       }
     },
     {
