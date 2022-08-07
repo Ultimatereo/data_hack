@@ -3,19 +3,8 @@
     "__cnt__": {
       "value": 10000
     },
-    "color": {
-      "select": [
-        "orange", "blue"
-      ]
-    },
-    "action": {
-      "select": [
-        "flying", "digging", "meowing", "hissing"
-      ]
-    },
     "birth_date": {
-      "start_year": 2003,
-      "stop_year": 2022
+      "start_year": 2003
     },
     "pet_name": {
       "from_length": 2,
