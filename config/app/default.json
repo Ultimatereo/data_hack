@@ -1,0 +1,67 @@
+{
+  "tasks": [
+    {
+      "job": "solo_generate",
+      "args": {
+        "table": {
+          "script_name": "CellClass",
+          "class_name": "Cell"
+        },
+        "export": {
+          "dir_name": "CellGen",
+          "data_type": "parquet",
+          "export_mode": "append"
+        },
+        "config": "config.json"
+      }
+    },
+    {
+      "job": "show_data",
+      "args": {
+        "dir_name": "CellGen",
+        "data_type": "parquet",
+        "count": 5
+      }
+    },
+    {
+      "job": "paired_generate",
+      "args": {
+        "table1": {
+          "script_name": "CellClass",
+          "class_name": "Cell"
+        },
+        "table2": {
+          "script_name": "Cell2Class",
+          "class_name": "Cell2"
+        },
+        "intersect_keys": {
+          "integer1": "iid",
+          "float2": "acceleration",
+          "abcword": "word"
+        },
+        "export": {
+          "dir_name1": "CellPrd",
+          "dir_name2": "Cell2Prd",
+          "data_type": "parquet"
+        },
+        "config": "config.json"
+      }
+    },
+    {
+      "job": "show_data",
+      "args": {
+        "dir_name": "CellPrd",
+        "data_type": "parquet",
+        "count": 10
+      }
+    },
+    {
+      "job": "show_data",
+      "args": {
+        "dir_name": "Cell2Prd",
+        "data_type": "parquet",
+        "count": 10
+      }
+    }
+  ]
+}

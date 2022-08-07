@@ -1,7 +1,7 @@
 {
   "Cell": {
     "__cnt__": {
-      "value": 100000
+      "value": 100
     },
     "integer1": {
       "start": -100,
@@ -27,7 +27,7 @@
   },
   "Cell2": {
     "__cnt__": {
-      "value": 100000
+      "value": 100
     },
     "iid": {
       "start": -10000,
